@@ -9,23 +9,60 @@ from multiprocessing.dummy import Pool as ThreadPool
 def simulate(deck):
     active_tibalts = 4 #hand or deck
     random.shuffle(deck)
+
+    def london_mulligan_put_back(deck, hand, hand_size, current_size):
+        for i in range(hand_size - current_size):
+            if 'P' in hand:
+                hand.remove('P')
+                deck += ['P']
+            elif  hand.count('1') > 1 or ('0' in hand and '1' in hand):
+                hand.remove('1')
+                deck += ['1']
+            elif  hand.count('0') > 1:
+                hand.remove('0')
+                deck += ['0']
+            elif  hand.count('T') > 1:
+                hand.remove('T')
+                deck += ['T']
+            elif 'L' in hand:
+                hand.remove('L')
+                deck += ['L']
+            elif '1' in hand:
+                hand.remove('1')
+                deck += ['1']
+            elif '0' in hand:
+                hand.remove('0')
+                deck += ['0']
+            elif 'T' in hand:
+                hand.remove('T')
+                deck += ['T']
+
+
+
     # Sets hand and initial deck
     def mulligan(deck):
         hand_size = 7
+        current_hand_size = 7
         undecided = True
         hand = []
         while undecided:
             deck += hand
+            random.shuffle(deck)
             hand = [deck.pop() for i in range(hand_size)]
-            
+            ## Janky London mulligan
             if hand_size >4 and ('T' in hand and (('0' in hand) or('1' in hand) )):
+                london_mulligan_put_back(deck, hand, hand_size, current_hand_size)
                 undecided = False
+
             elif 'T' in hand:
+                london_mulligan_put_back(deck, hand, hand_size, current_hand_size)
                 undecided = False
-            elif hand_size <= 1:
+
+            elif current_hand_size == 1:
+                london_mulligan_put_back(deck, hand, hand_size, current_hand_size)
                 undecided = False
-            
-            hand_size -= 1
+
+            current_hand_size -= 1
         
         return hand
     
@@ -199,8 +236,8 @@ class Deck():
                     fast_success_turns += sim_end
                     fast_successes += 1
 
-            # if i % 10  == 0:
-            #     print(f'Specimen {specie_count} Fitness Iteration {i}', end = '\r')
+            if i % 10  == 0:
+                print(f'Specimen {specie_count} Fitness Iteration {i}', end = '\r')
 
         self.successes = successes
         self.success_fitness = success_turns / successes if successes != 0 else 0
@@ -263,16 +300,16 @@ if __name__ == '__main__':
         # calculate fitness
         count = 0
 
-        threading_pool = ThreadPool(4)
-        result = threading_pool.map(fit , pool)
-        threading_pool.close()
-        threading_pool.join()
-        pool = result
+        # threading_pool = ThreadPool(4)
+        # result = threading_pool.map(fit , pool)
+        # threading_pool.close()
+        # threading_pool.join()
+        # pool = result
 
-        # for deck in pool:
-        #     if deck.fitness is None:
-        #         deck.calculate_fitness(FITNESS_ITERATIONS, count)
-        #         count +=1
+        for deck in pool:
+            if deck.fitness is None:
+                deck.calculate_fitness(FITNESS_ITERATIONS, count)
+                count +=1
         
         pool = sorted(pool, key = lambda d : d.fast_successes, reverse=True)    
         print_pool(pool, generation)
