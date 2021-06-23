@@ -18,3 +18,5 @@ Trickery breaks powerlevel progression by allowing a player to counter one of hi
 
 Thus a trickery deck is crafted as a balanced of 4 Trickeries, some amount of lands, some amount of 0-costed spells and some amount of big spells to serve as payoff.
 I wrote this script to find the ideal balance of lands, 0costs, and payoffs. The format in which this deck was popular contained 2 0-cost cards to choose from, and as such could contain from between 0 and 8 of them. My experiments showed 8 was the clear winner, with some number between 8 and 11 being possible if you could go that high. As for lands and payoffs, as I did not fit for multiple pay  off hits, it varied wildly, with some epochs reaching equilibrium with 20 lands. 
+
+As a warning, this was written in about an hour. There are plenty of upgrades to be made to improve the accuracy and/or provide more insights.
